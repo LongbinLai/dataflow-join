@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Index` struct in crate `alg3_dynamic`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Index">
+
+    <title>alg3_dynamic::Index - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc struct">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'>Struct Index</p><div class="block items"><ul><li><a href="#methods">Methods</a></li></ul></div><p class='location'><a href='index.html'>alg3_dynamic</a></p><script>window.sidebarCurrent = {name: 'Index', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>alg3_dynamic</a>::<wbr><a class="struct" href=''>Index</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../src/alg3_dynamic/index.rs.html#12-19' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct Index&lt;Key:&nbsp;<a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html" title="trait core::cmp::Ord">Ord</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html" title="trait core::hash::Hash">Hash</a>, T&gt; { /* fields omitted */ }</pre><div class='docblock'><p>A multiversion multimap from <code>Key</code> to <code>Val</code>.</p>
+
+<p>An <code>Index</code> represents a multiversion <code>(Key, Val)</code> relation keyed on the first field. 
+It presently assumes that the keys are dense, and so uses a <code>Vec&lt;State&gt;</code> to maintain 
+per-key state. This could be generalized (and may need to be) to index structures
+such as e.g. <code>HashMap</code>.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;Key:&nbsp;<a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html" title="trait core::cmp::Ord">Ord</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html" title="trait core::hash::Hash">Hash</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html" title="trait core::marker::Copy">Copy</a>, T:&nbsp;<a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html" title="trait core::cmp::Ord">Ord</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>&gt; <a class="struct" href="../alg3_dynamic/struct.Index.html" title="struct alg3_dynamic::Index">Index</a>&lt;Key, T&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/alg3_dynamic/index.rs.html#156-509' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class="struct" href="../alg3_dynamic/struct.Index.html" title="struct alg3_dynamic::Index">Index</a>&lt;Key, T&gt;</code></span></h4>
+<div class='docblock'><p>Allocates a new empty index.</p>
+</div><h4 id='method.count' class="method"><span id='count.v' class='invisible'><code>fn <a href='#method.count' class='fnname'>count</a>&lt;P, K, V&gt;(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;data: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">(</a>P, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">)</a>&gt;, <br>&nbsp;&nbsp;&nbsp;&nbsp;func: &amp;K, <br>&nbsp;&nbsp;&nbsp;&nbsp;_valid: &amp;V, <br>&nbsp;&nbsp;&nbsp;&nbsp;ident: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a><br>) <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;K: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(&amp;P) -&gt; Key,<br>&nbsp;&nbsp;&nbsp;&nbsp;V: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(&amp;T) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,&nbsp;</span></code></span></h4>
+<div class='docblock'><p>Updates entries of <code>data</code> to reflect counts in the index.</p>
+</div><h4 id='method.propose' class="method"><span id='propose.v' class='invisible'><code>fn <a href='#method.propose' class='fnname'>propose</a>&lt;P, K, V&gt;(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;data: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">(</a>P, <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt;, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">)</a>&gt;, <br>&nbsp;&nbsp;&nbsp;&nbsp;func: &amp;K, <br>&nbsp;&nbsp;&nbsp;&nbsp;valid: &amp;V<br>) <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;K: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(&amp;P) -&gt; Key,<br>&nbsp;&nbsp;&nbsp;&nbsp;V: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(&amp;T) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,&nbsp;</span></code></span></h4>
+<div class='docblock'><p>Proposes extensions for prefixes based on the index.</p>
+</div><h4 id='method.intersect' class="method"><span id='intersect.v' class='invisible'><code>fn <a href='#method.intersect' class='fnname'>intersect</a>&lt;P, F, V&gt;(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;data: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">(</a>P, <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt;, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">)</a>&gt;, <br>&nbsp;&nbsp;&nbsp;&nbsp;func: &amp;F, <br>&nbsp;&nbsp;&nbsp;&nbsp;valid: &amp;V<br>) <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(&amp;P) -&gt; Key,<br>&nbsp;&nbsp;&nbsp;&nbsp;V: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(&amp;T) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,&nbsp;</span></code></span></h4>
+<div class='docblock'><p>Restricts extensions for prefixes to those found in the index.</p>
+</div><h4 id='method.merge_to' class="method"><span id='merge_to.v' class='invisible'><code>fn <a href='#method.merge_to' class='fnname'>merge_to</a>(&amp;mut self, time: &amp;T)</code></span></h4>
+<div class='docblock'><p>Commits updates up to and including <code>time</code>.</p>
+
+<p>This merges any differences with time less or equal to <code>time</code>, and should probably only be called
+once the user is certain to never require such a distinction again. These differences are not yet 
+compacted, they&#39;ve just had their times stripped off.</p>
+
+<p>This operation is important to ensure that <code>self.diffs</code> doesn&#39;t grow too large, as our strategy
+for keeping it sorted is to re-sort it whenever we add data. If it grew without bound this would
+be pretty horrible. In principe, this operation also allows us to consolidate the representation, 
+if we have updates which update the same value (potentially cancelling).</p>
+</div><h4 id='method.update' class="method"><span id='update.v' class='invisible'><code>fn <a href='#method.update' class='fnname'>update</a>(&amp;mut self, time: T, updates: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">(</a>Key, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">(</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">)</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">)</a>&gt;)</code></span></h4>
+<div class='docblock'><p>Introduces a collection of updates at various times.</p>
+
+<p>These updates will now be reflected in all queries against the index, at or after the 
+indicated logical time.</p>
+</div><h4 id='method.initialize' class="method"><span id='initialize.v' class='invisible'><code>fn <a href='#method.initialize' class='fnname'>initialize</a>(&amp;mut self, initial: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">(</a>Key, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">)</a>&gt;&gt;)</code></span></h4>
+<div class='docblock'><p>Sets an initial collection of positive counts, which we can compact.</p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "alg3_dynamic";
+    </script>
+    <script src="../main.js"></script>
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

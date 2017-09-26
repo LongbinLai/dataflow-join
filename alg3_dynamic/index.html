@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `alg3_dynamic` crate.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, alg3_dynamic">
+
+    <title>alg3_dynamic - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc mod">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'>Crate alg3_dynamic</p><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'alg3_dynamic', ty: 'mod', relpath: '../'};</script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Crate <a class="mod" href=''>alg3_dynamic</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../src/alg3_dynamic/lib.rs.html#1-178' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>An incremental implementation of worst-case optimal joins.</p>
+
+<p>This crate contains functionality to construct timely dataflow computations to compute and maintain 
+the results of complex relational joins under changes to the relations, with worst-case optimality 
+guarantees about the running time.</p>
+
+<p>As an example, consider a stream of directed graph edges <code>(src, dst)</code> where we would like to find all 
+directed cycles of length three. That is, node indentifiers <code>x0</code>, <code>x1</code>, and <code>x2</code> where the graph contains
+edges <code>(x0, x1)</code>, <code>(x1, x2)</code>, and <code>(x2, x0)</code>. We can write this query as a relational join on the edge
+relation <code>edge(x,y)</code>, as</p>
+
+<p>cycle_3(x0, x1, x2) := edge(x0, x1), edge(x1, x2), edge(x2, x0)</p>
+
+<p>To determine the set of three-cycles, we could use standard techniques from the database literature to 
+perform the join, typically first picking one attribute (<code>x0</code>, <code>x1</code>, or <code>x2</code>) and performing the join on
+the two relations containing that attribute, then joining (intersecting) with the remaining relation.</p>
+
+<p>This has the defect that it may perform an amount of work quadratic in the size of <code>edges</code>. Recent work 
+on &quot;worst-case optimal join processing&quot; shows how to get around this problem, by considering multiple 
+relations at the same time.</p>
+
+<p>This crate is a streaming implementation of incremental worst-case optimal join processing. You may 
+indicate a relational query like above, and the crate with synthesize a timely dataflow computation which
+reports all changes to the occurrences of satisfying assignments to the values. The amount of work performed
+is no more than the worst-case optimal bound.</p>
+
+<h1 id='example' class='section-header'><a href='#example'>Example</a></h1>
+<pre class="rust rust-example-rendered">
+<span class="kw">fn</span> <span class="ident">main</span> () {
+    
+    <span class="comment">// start up a timely dataflow computation</span>
+    <span class="ident">timely</span>::<span class="ident">execute_from_args</span>(<span class="ident">std</span>::<span class="ident">env</span>::<span class="ident">args</span>(), <span class="kw">move</span> <span class="op">|</span><span class="ident">root</span><span class="op">|</span> {
+
+        <span class="comment">// build the dataflow graph, return input and output.</span>
+        <span class="kw">let</span> (<span class="ident">edges</span>, <span class="ident">probe</span>) <span class="op">=</span> <span class="ident">root</span>.<span class="ident">scoped</span>(<span class="op">|</span><span class="ident">scope</span><span class="op">|</span> {
+
+            <span class="comment">// construct an input for edge changes.</span>
+            <span class="kw">let</span> (<span class="ident">input</span>, <span class="ident">edges</span>) <span class="op">=</span> <span class="ident">scope</span>.<span class="ident">new_input</span>();
+
+            <span class="comment">// index the edge relation by first and second fields.</span>
+            <span class="kw">let</span> (<span class="ident">forward</span>, <span class="ident">forward_handle</span>) <span class="op">=</span> <span class="ident">edges</span>.<span class="ident">concat</span>(<span class="kw-2">&amp;</span><span class="ident">query</span>).<span class="ident">index</span>();
+            <span class="kw">let</span> (<span class="ident">reverse</span>, <span class="ident">reverse_handle</span>) <span class="op">=</span> <span class="ident">edges</span>.<span class="ident">concat</span>(<span class="kw-2">&amp;</span><span class="ident">query</span>)
+                                                 .<span class="ident">map</span>(<span class="op">|</span>((<span class="ident">src</span>,<span class="ident">dst</span>),<span class="ident">wgt</span>)<span class="op">|</span> ((<span class="ident">dst</span>,<span class="ident">src</span>),<span class="ident">wgt</span>))
+                                                 .<span class="ident">index</span>();
+
+            <span class="comment">// construct the motif dataflow subgraph.</span>
+            <span class="kw">let</span> <span class="ident">motif</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[(<span class="number">0</span>,<span class="number">1</span>), (<span class="number">1</span>,<span class="number">2</span>), (<span class="number">2</span>,<span class="number">0</span>)];
+            <span class="kw">let</span> <span class="ident">cycles</span> <span class="op">=</span> <span class="ident">general_motif</span>(<span class="ident">motif</span>, <span class="kw-2">&amp;</span><span class="ident">edges</span>, <span class="kw-2">&amp;</span><span class="ident">forward</span>, <span class="kw-2">&amp;</span><span class="ident">reverse</span>);
+ 
+            <span class="comment">// count cycles, print, return status of the result.</span>
+            <span class="kw">let</span> <span class="ident">probe</span> <span class="op">=</span> <span class="ident">cycles</span>.<span class="ident">count</span>()
+                              .<span class="ident">inspect</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">println</span>(<span class="string">&quot;found: {:?}&quot;</span>, <span class="ident">x</span>))
+                              .<span class="ident">probe</span>().<span class="number">0</span>;
+
+            (<span class="ident">input</span>, <span class="ident">probe</span>)
+        });         
+
+        <span class="comment">// now supply a stream of changes to the graph.         </span>
+        <span class="ident">edges</span>.<span class="ident">send</span>(((<span class="number">0</span>, <span class="number">1</span>), <span class="number">1</span>));
+        <span class="ident">edges</span>.<span class="ident">send</span>(((<span class="number">1</span>, <span class="number">2</span>), <span class="number">1</span>));
+        <span class="ident">edges</span>.<span class="ident">send</span>(((<span class="number">2</span>, <span class="number">0</span>), <span class="number">1</span>));
+        <span class="ident">edges</span>.<span class="ident">advance_to</span>(<span class="number">1</span>);
+        <span class="ident">root</span>.<span class="ident">step_while</span>(<span class="op">||</span> <span class="ident">probe</span>.<span class="ident">lt</span>(<span class="kw-2">&amp;</span><span class="ident">edges</span>.<span class="ident">time</span>()));
+        <span class="comment">// should report `(0, 1, 2)`.</span>
+
+        <span class="ident">edges</span>.<span class="ident">send</span>(((<span class="number">0</span>, <span class="number">0</span>), <span class="number">1</span>));
+        <span class="ident">edges</span>.<span class="ident">advance_to</span>(<span class="number">2</span>);
+        <span class="ident">root</span>.<span class="ident">step_while</span>(<span class="op">||</span> <span class="ident">probe</span>.<span class="ident">lt</span>(<span class="kw-2">&amp;</span><span class="ident">edges</span>.<span class="ident">time</span>()));
+        <span class="comment">// should report `(0, 0, 0)`</span>
+
+        <span class="ident">edges</span>.<span class="ident">send</span>(((<span class="number">0</span>, <span class="number">1</span>), <span class="op">-</span><span class="number">1</span>));
+        <span class="ident">edges</span>.<span class="ident">advance_to</span>(<span class="number">2</span>);
+        <span class="ident">root</span>.<span class="ident">step_while</span>(<span class="op">||</span> <span class="ident">probe</span>.<span class="ident">lt</span>(<span class="kw-2">&amp;</span><span class="ident">edges</span>.<span class="ident">time</span>()));
+        <span class="comment">// should report `(0, 1, 2)` with a negative update.</span>
+    }
+}</pre>
+</div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="mod" href="motif/index.html"
+                                  title='mod alg3_dynamic::motif'>motif</a></td>
+                           <td class='docblock-short'>
+                                <p>Construction of dataflow for general graph motifs.</p>
+                           </td>
+                       </tr></table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.Index.html"
+                                  title='struct alg3_dynamic::Index'>Index</a></td>
+                           <td class='docblock-short'>
+                                <p>A multiversion multimap from <code>Key</code> to <code>Val</code>.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.IndexStream.html"
+                                  title='struct alg3_dynamic::IndexStream'>IndexStream</a></td>
+                           <td class='docblock-short'>
+                                <p>A pair of update stream and update index.</p>
+                           </td>
+                       </tr></table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="trait" href="trait.GenericJoin.html"
+                                  title='trait alg3_dynamic::GenericJoin'>GenericJoin</a></td>
+                           <td class='docblock-short'>
+                                <p>Extension method for generic join functionality.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="trait" href="trait.Indexable.html"
+                                  title='trait alg3_dynamic::Indexable'>Indexable</a></td>
+                           <td class='docblock-short'>
+                                <p>Arranges something as an <code>IndexStream</code>.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="trait" href="trait.StreamPrefixExtender.html"
+                                  title='trait alg3_dynamic::StreamPrefixExtender'>StreamPrefixExtender</a></td>
+                           <td class='docblock-short'>
+                                <p>Functionality used by GenericJoin to extend prefixes with new attributes.</p>
+                           </td>
+                       </tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.advance.html"
+                                  title='fn alg3_dynamic::advance'>advance</a></td>
+                           <td class='docblock-short'>
+                                <p>Reports the number of elements satisfing the predicate.</p>
+                           </td>
+                       </tr></table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "alg3_dynamic";
+    </script>
+    <script src="../main.js"></script>
+    <script defer src="../search-index.js"></script>
+</body>
+</html>
